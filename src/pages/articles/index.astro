@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { slugify } from '../../lib/slug';
+
+const all = (await getCollection('articles'))
+  .filter(e => !e.data.draft)
+  .sort((a,b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const tags = Array.from(new Set(all.flatMap(a => a.data.tags || []))).sort((a,b)=>a.localeCompare(b));
+const categories = Array.from(new Set(all.flatMap(a => a.data.categories || []))).sort((a,b)=>a.localeCompare(b));
+---
+<BaseLayout title="Articles" description="Tous les articles (triés par date)">
+  <div class="page">
+    <div class="inner">
+      <h1>Articles</h1>
+      <p class="muted">Tri : du plus récent au plus ancien. Filtre minimal par tag / catégorie.</p>
+
+      <div class="card">
+        <div class="row">
+          <div>
+            <small class="muted">Catégories</small><br/>
+            <select id="catSel">
+              <option value="">Toutes</option>
+              {categories.map(c => <option value={slugify(c)}>{c}</option>)}
+            </select>
+          </div>
+          <div>
+            <small class="muted">Tags</small><br/>
+            <select id="tagSel">
+              <option value="">Tous</option>
+              {tags.map(t => <option value={slugify(t)}>{t}</option>)}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="list">
+        {all.map((a) => (
+          <article class="card" data-tags={a.data.tags.map(slugify).join(' ')} data-cats={a.data.categories.map(slugify).join(' ')}>
+            <div class="row">
+              <a href={`/articles/${a.slug}`}>{a.data.title}</a>
+              <small class="muted">{a.data.date.toISOString().slice(0,10)}</small>
+            </div>
+            <p class="muted">{a.data.description}</p>
+            <small class="muted">
+              {a.data.categories?.length ? <>Catégories: {a.data.categories.join(', ')} — </> : null}
+              {a.data.tags?.length ? <>Tags: {a.data.tags.join(', ')}</> : null}
+            </small>
+          </article>
+        ))}
+      </div>
+
+      <script type="module">
+        const catSel = document.getElementById('catSel');
+        const tagSel = document.getElementById('tagSel');
+        const cards = Array.from(document.querySelectorAll('#list [data-tags]'));
+
+        function apply(){
+          const c = catSel.value;
+          const t = tagSel.value;
+          cards.forEach(el => {
+            const okC = !c || (el.dataset.cats || '').split(/\s+/).includes(c);
+            const okT = !t || (el.dataset.tags || '').split(/\s+/).includes(t);
+            el.style.display = (okC && okT) ? '' : 'none';
+          });
+        }
+        catSel?.addEventListener('change', apply);
+        tagSel?.addEventListener('change', apply);
+      </script>
+    </div>
+  </div>
+</BaseLayout>

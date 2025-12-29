@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { slugify } from '../../lib/slug';
+
+const all = (await getCollection('articles')).filter(e => !e.data.draft);
+const tagMap = new Map();
+for (const a of all){
+  for (const t of (a.data.tags || [])){
+    const s = slugify(t);
+    tagMap.set(s, { label: t, count: (tagMap.get(s)?.count ?? 0) + 1 });
+  }
+}
+const tags = Array.from(tagMap.entries())
+  .map(([slug, v]) => ({ slug, ...v }))
+  .sort((a,b)=> a.label.localeCompare(b.label));
+---
+<BaseLayout title="Tags" description="Liste des tags">
+  <div class="page"><div class="inner">
+    <h1>Tags</h1>
+    {tags.map(t => (
+      <div class="card">
+        <a href={`/tags/${t.slug}`}>{t.label}</a>
+        <small class="muted"> — {t.count} article(s)</small>
+        <div class="hr"></div>
+        <small><a class="muted" href={`/rss/tags/${t.slug}.xml`}>RSS</a></small>
+      </div>
+    ))}
+  </div></div>
+</BaseLayout>

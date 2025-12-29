@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { slugify } from '../../lib/slug';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('articles')).filter(e => !e.data.draft);
+  const catSet = new Set(all.flatMap(a => (a.data.categories || []).map(slugify)));
+  return Array.from(catSet).map(category => ({ params: { category } }));
+}
+
+const { category } = Astro.params;
+const all = (await getCollection('articles'))
+  .filter(e => !e.data.draft && (e.data.categories || []).map(slugify).includes(category))
+  .sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
+
+const label = (all[0]?.data.categories || []).find(c => slugify(c)===category) || category;
+---
+<BaseLayout title={`Catégorie: ${label}`} description={`Articles dans ${label}`}>
+  <div class="page"><div class="inner">
+    <h1>Catégorie : {label}</h1>
+    <p><a class="muted" href={`/rss/categories/${category}.xml`}>RSS pour cette catégorie</a></p>
+    {all.map(a => (
+      <article class="card">
+        <div class="row">
+          <a href={`/articles/${a.slug}`}>{a.data.title}</a>
+          <small class="muted">{a.data.date.toISOString().slice(0,10)}</small>
+        </div>
+        <p class="muted">{a.data.description}</p>
+      </article>
+    ))}
+  </div></div>
+</BaseLayout>

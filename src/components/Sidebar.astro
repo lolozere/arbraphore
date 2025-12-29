@@ -1,0 +1,47 @@
+---
+const now = new Date();
+const year = now.getFullYear();
+---
+<aside class="sidebar" aria-label="Navigation">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"></div>
+    <div class="title">Créer mon journal en ligne</div>
+    <small class="muted">Démo Astro • MDX • Decap • Pagefind</small>
+  </div>
+
+  <div class="search">
+    <form action="/search" method="get">
+      <input type="search" name="q" placeholder="Rechercher…" aria-label="Rechercher" />
+    </form>
+    <div class="row">
+      <a class="pill" href="/articles">Articles</a>
+      <a class="pill" href="/journal">Journal</a>
+    </div>
+  </div>
+
+  <nav>
+    <a class="pill" href="/">Accueil (séquences)</a>
+    <a class="pill" href="/about">À propos (séquences)</a>
+    <a class="pill" href="/tags">Tags</a>
+    <a class="pill" href="/categories">Catégories</a>
+    <a class="pill" href="/rss.xml">RSS (articles)</a>
+    <a class="pill" href="/rss/journal.xml">RSS (journal)</a>
+    <a class="pill" href="/admin/">Éditer (Decap CMS)</a>
+  </nav>
+
+  <div class="hr"></div>
+
+  <div class="row">
+    <small class="muted">© {year}</small>
+    <button type="button" id="themeBtn">Mode</button>
+  </div>
+
+  <script type="module">
+    const btn = document.getElementById('themeBtn');
+    btn?.addEventListener('click', () => {
+      const cur = document.documentElement.dataset.theme || 'light';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      window.__setTheme?.(next);
+    });
+  </script>
+</aside>

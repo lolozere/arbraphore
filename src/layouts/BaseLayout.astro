@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import Sidebar from '../components/Sidebar.astro';
+
+const { title = 'Journal', description = '' } = Astro.props;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    {description ? <meta name="description" content={description} /> : null}
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="container" data-sidebar="closed" id="app">
+      <Sidebar />
+
+      <div class="overlay" id="overlay"></div>
+      <button class="chevron-handle" id="chevron" aria-label="Ouvrir le menu">
+        <span></span>
+      </button>
+
+      <main class="main">
+        <div class="content-frame">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <script type="module">
+      const app = document.getElementById('app');
+      const overlay = document.getElementById('overlay');
+      const chevron = document.getElementById('chevron');
+
+      function openSidebar(){ app?.setAttribute('data-sidebar','open'); }
+      function closeSidebar(){ app?.setAttribute('data-sidebar','closed'); }
+      function toggleSidebar(){
+        const isOpen = app?.getAttribute('data-sidebar') === 'open';
+        isOpen ? closeSidebar() : openSidebar();
+      }
+
+      chevron?.addEventListener('click', toggleSidebar);
+      overlay?.addEventListener('click', closeSidebar);
+
+      // Swipe from left edge to open (mobile)
+      let startX = null;
+      window.addEventListener('touchstart', (e) => {
+        const t = e.touches?.[0];
+        if (!t) return;
+        if (t.clientX < 18) startX = t.clientX;
+      }, { passive: true });
+      window.addEventListener('touchend', (e) => {
+        if (startX === null) return;
+        const t = e.changedTouches?.[0];
+        if (!t) return;
+        if ((t.clientX - startX) > 60) openSidebar();
+        startX = null;
+      }, { passive: true });
+
+      // Theme toggle persisted
+      const stored = localStorage.getItem('theme');
+      if (stored === 'dark' || stored === 'light') {
+        document.documentElement.dataset.theme = stored;
+      }
+      window.__setTheme = (t) => {
+        document.documentElement.dataset.theme = t;
+        localStorage.setItem('theme', t);
+      };
+    </script>
+  </body>
+</html>

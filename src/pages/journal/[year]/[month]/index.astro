@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths(){
+  const all = (await getCollection('journal')).filter(e=>!e.data.draft);
+  const pairs = new Set(all.map(e => {
+    const y = e.data.date.getFullYear();
+    const m = String(e.data.date.getMonth()+1).padStart(2,'0');
+    return `${y}-${m}`;
+  }));
+  return Array.from(pairs).map(p => {
+    const [year, month] = p.split('-');
+    return { params: { year, month } };
+  });
+}
+
+const year = Number(Astro.params.year);
+const month = String(Astro.params.month);
+
+const all = (await getCollection('journal'))
+  .filter(e => !e.data.draft &&
+    e.data.date.getFullYear() === year &&
+    String(e.data.date.getMonth()+1).padStart(2,'0') === month
+  )
+  .sort((a,b)=> b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title={`Journal ${year}-${month}`} description={`Brèves ${year}-${month}`}>
+  <div class="page"><div class="inner">
+    <div class="row">
+      <a class="muted" href={`/journal/${year}`}>← {year}</a>
+      <small class="muted">{all.length} entrée(s)</small>
+    </div>
+    <h1>{year}-{month}</h1>
+    {all.map(e => (
+      <article class="card">
+        <a class="muted" href={`/journal/${e.slug}`}><strong>{e.data.date.toISOString().slice(0,10)}</strong></a>
+        <span class="muted"> — {e.data.type}</span>
+        <div class="hr"></div>
+        <p class="muted">{e.data.title}</p>
+      </article>
+    ))}
+  </div></div>
+</BaseLayout>

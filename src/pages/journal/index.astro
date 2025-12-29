@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const all = (await getCollection('journal'))
+  .filter(e => !e.data.draft)
+  .sort((a,b)=> b.data.date.valueOf() - a.data.date.valueOf());
+
+const latest = all.slice(0,3);
+
+// available years/months
+const years = new Map();
+for (const j of all){
+  const y = j.data.date.getFullYear();
+  const m = String(j.data.date.getMonth()+1).padStart(2,'0');
+  if (!years.has(y)) years.set(y, new Set());
+  years.get(y).add(m);
+}
+const yearList = Array.from(years.entries()).sort((a,b)=>b[0]-a[0]);
+---
+<BaseLayout title="Journal" description="Brèves (non séquencées) triées par période">
+  <div class="page"><div class="inner">
+    <h1>Journal</h1>
+    <p class="muted">Brèves type “post”. Pas de lecture en séquences. Tri du plus récent au plus ancien.</p>
+
+    <h2>Les 3 derniers</h2>
+    {latest.map(e => (
+      <article class="card">
+        <a class="muted" href={`/journal/${e.slug}`}><strong>{e.data.date.toISOString().slice(0,10)}</strong></a>
+        <span class="muted"> — {e.data.type}</span>
+        <div class="hr"></div>
+        <p class="muted">{e.data.title}</p>
+      </article>
+    ))}
+
+    <h2>Périodes</h2>
+    {yearList.map(([y, months]) => (
+      <div class="card">
+        <a href={`/journal/${y}`}><strong>{y}</strong></a>
+        <div class="hr"></div>
+        <small class="muted">
+          {Array.from(months).sort().map(m => <a class="pill" style="margin-right:8px" href={`/journal/${y}/${m}`}>{y}-{m}</a>)}
+        </small>
+      </div>
+    ))}
+  </div></div>
+</BaseLayout>

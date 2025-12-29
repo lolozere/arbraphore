@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { slugify } from '../../lib/slug';
+
+const all = (await getCollection('articles')).filter(e => !e.data.draft);
+const catMap = new Map();
+for (const a of all){
+  for (const c of (a.data.categories || [])){
+    const s = slugify(c);
+    catMap.set(s, { label: c, count: (catMap.get(s)?.count ?? 0) + 1 });
+  }
+}
+const cats = Array.from(catMap.entries())
+  .map(([slug, v]) => ({ slug, ...v }))
+  .sort((a,b)=> a.label.localeCompare(b.label));
+---
+<BaseLayout title="Catégories" description="Liste des catégories">
+  <div class="page"><div class="inner">
+    <h1>Catégories</h1>
+    {cats.map(c => (
+      <div class="card">
+        <a href={`/categories/${c.slug}`}>{c.label}</a>
+        <small class="muted"> — {c.count} article(s)</small>
+        <div class="hr"></div>
+        <small><a class="muted" href={`/rss/categories/${c.slug}.xml`}>RSS</a></small>
+      </div>
+    ))}
+  </div></div>
+</BaseLayout>

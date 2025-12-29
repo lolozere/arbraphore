@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const q = Astro.url.searchParams.get('q') ?? '';
+---
+<BaseLayout title="Recherche" description="Recherche dans le site">
+  <div class="page"><div class="inner">
+    <h1>Recherche</h1>
+    <form>
+      <input type="search" name="q" value={q} placeholder="Mots clés…" />
+    </form>
+    <div class="hr"></div>
+    <div id="results" class="muted">Tapez une requête.</div>
+  </div></div>
+
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const query = params.get('q') || '';
+    const resultsEl = document.getElementById('results');
+
+    async function run(){
+      if (!query.trim()){
+        resultsEl.textContent = 'Tapez une requête.';
+        return;
+      }
+      resultsEl.textContent = 'Recherche…';
+
+      // Pagefind generates /pagefind/pagefind.js at build time (postbuild script)
+      const pagefind = await import('/pagefind/pagefind.js');
+      await pagefind.init();
+
+      const res = await pagefind.search(query);
+      if (!res.results.length){
+        resultsEl.textContent = 'Aucun résultat.';
+        return;
+      }
+
+      const data = await Promise.all(res.results.slice(0, 20).map(r => r.data()));
+      resultsEl.innerHTML = data.map(d => {
+        const url = d.url || '#';
+        const title = d.meta?.title || url;
+        const excerpt = d.excerpt || '';
+        return `
+          <article class="card">
+            <a href="${url}">${title}</a>
+            <p class="muted">${excerpt}</p>
+          </article>
+        `;
+      }).join('');
+    }
+    run();
+  </script>
+</BaseLayout>

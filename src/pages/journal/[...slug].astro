@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('journal')).filter(e => !e.data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+function renderJournalHeader(){
+  const d = entry.data;
+  const date = d.date.toISOString().slice(0,10);
+
+  const type = d.type;
+  if (type === 'youtube' && d.youtubeId){
+    return `<iframe width="100%" height="420" src="https://www.youtube-nocookie.com/embed/${d.youtubeId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  }
+  if (type === 'vimeo' && d.vimeoId){
+    return `<iframe src="https://player.vimeo.com/video/${d.vimeoId}" width="100%" height="420" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Vimeo player"></iframe>`;
+  }
+  if (type === 'image' && d.image){
+    const alt = d.imageAlt || d.title;
+    return `<img src="${d.image}" alt="${alt}" />`;
+  }
+  return '';
+}
+---
+<BaseLayout title={`Journal — ${entry.data.title}`} description={`Brève du ${entry.data.date.toISOString().slice(0,10)}`}>
+  <div class="page"><div class="inner">
+    <div class="row">
+      <a class="muted" href="/journal">← Journal</a>
+      <a class="muted" href={`/journal/${entry.data.date.getFullYear()}`}>Année {entry.data.date.getFullYear()}</a>
+    </div>
+
+    <p>
+      <a href={`/journal/${entry.slug}`}><strong>{entry.data.date.toISOString().slice(0,10)}</strong></a>
+      <span class="muted"> — {entry.data.type}</span>
+    </p>
+
+    {renderJournalHeader() ? <div class="card" set:html={renderJournalHeader()} /> : null}
+
+    {entry.data.type === 'documents' && entry.data.documents?.length ? (
+      <div class="card">
+        <strong>Documents</strong>
+        <div class="hr"></div>
+        <ul>
+          {entry.data.documents.map(d => <li><a href={d.file} download>{d.label}</a></li>)}
+        </ul>
+      </div>
+    ) : null}
+
+    <div class="card">
+      <Content />
+    </div>
+  </div></div>
+</BaseLayout>

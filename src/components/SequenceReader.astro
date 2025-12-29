@@ -1,0 +1,241 @@
+---
+/**
+ * Wrap MDX/Markdown content (passed via <slot />) and turn each H2 section into a "sequence".
+ * Hash navigation: #section-slug
+ *
+ * Rules:
+ * - media-only sections are vertically centered, no scrolling
+ * - text sections can scroll
+ * - media-only shows section title at top; if the section is ONLY an image -> show image alt as title
+ */
+---
+<div class="seq" data-seq-root>
+  <div class="seq-viewport">
+    <article class="seq-source" data-seq-source>
+      <slot />
+    </article>
+    <div class="seq-render" data-seq-render></div>
+  </div>
+
+  <div class="drawer" data-open="false" id="drawer">
+    <header>
+      <strong>Sections</strong>
+      <button type="button" id="drawerClose">Fermer</button>
+    </header>
+    <div class="list" id="drawerList"></div>
+  </div>
+
+  <div class="seq-nav" aria-label="Navigation des sections">
+    <div class="bar">
+      <button type="button" id="prevBtn" aria-label="Section précédente">←</button>
+      <div class="center">
+        <button type="button" id="menuBtn" aria-label="Ouvrir le sommaire">☰</button>
+        <span class="hint" id="counter"></span>
+      </div>
+      <button type="button" id="nextBtn" aria-label="Section suivante">→</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  const root = document.querySelector('[data-seq-root]');
+  const source = root?.querySelector('[data-seq-source]');
+  const render = root?.querySelector('[data-seq-render]');
+  const drawer = document.getElementById('drawer');
+  const drawerList = document.getElementById('drawerList');
+  const drawerClose = document.getElementById('drawerClose');
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const menuBtn = document.getElementById('menuBtn');
+  const counter = document.getElementById('counter');
+
+  function slugify(s){
+    return (s || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9\s-]/g,'')
+      .trim()
+      .replace(/\s+/g,'-')
+      .replace(/-+/g,'-');
+  }
+
+  function isTextMeaningful(node){
+    const txt = node.textContent || '';
+    return txt.replace(/\s+/g,' ').trim().length > 0;
+  }
+
+  function detectMediaOnly(sectionEl){
+    const mediaSelectors = 'img,video,audio,iframe,figure,source';
+    const hasMedia = sectionEl.querySelector(mediaSelectors);
+    if (!hasMedia) return false;
+
+    // If there are paragraphs or lists with meaningful text => treat as text
+    const textBlocks = sectionEl.querySelectorAll('p,li,blockquote');
+    for (const tb of textBlocks){
+      if (isTextMeaningful(tb)) return false;
+    }
+
+    // Any stray meaningful text nodes? then it's text
+    const walker = document.createTreeWalker(sectionEl, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())){
+      if ((node.nodeValue || '').replace(/\s+/g,' ').trim().length > 0) return false;
+    }
+
+    return true;
+  }
+
+  function sectionIsOnlySingleImage(sectionEl){
+    const imgs = sectionEl.querySelectorAll('img');
+    const videos = sectionEl.querySelectorAll('video,iframe,audio');
+    if (videos.length) return false;
+    if (imgs.length !== 1) return false;
+
+    // ensure no meaningful text
+    const walker = document.createTreeWalker(sectionEl, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())){
+      if ((node.nodeValue || '').replace(/\s+/g,' ').trim().length > 0) return false;
+    }
+    return true;
+  }
+
+  function buildSequences(){
+    if (!source) return [];
+
+    const children = Array.from(source.children);
+
+    const h2Indexes = children
+      .map((el, i) => el.tagName === 'H2' ? i : -1)
+      .filter(i => i >= 0);
+
+    const sections = [];
+    if (h2Indexes.length === 0){
+      sections.push({ title: 'Section', id: 'section', nodes: children });
+      return sections;
+    }
+
+    for (let j=0; j<h2Indexes.length; j++){
+      const start = h2Indexes[j];
+      const end = (j+1 < h2Indexes.length) ? h2Indexes[j+1] : children.length;
+      const h2 = children[start];
+      const title = (h2.textContent || '').trim();
+      const id = slugify(title) || `section-${j+1}`;
+      const nodes = children.slice(start+1, end);
+      sections.push({ title, id, nodes });
+    }
+    return sections;
+  }
+
+  function renderSequences(sections){
+    if (!render || !source) return;
+    render.innerHTML = '';
+    source.style.display = 'none';
+
+    sections.forEach((sec) => {
+      const wrapper = document.createElement('section');
+      wrapper.className = 'seq-section';
+      wrapper.dataset.seqId = sec.id;
+
+      const textOuter = document.createElement('div');
+      textOuter.className = 'seq-text';
+
+      const textInner = document.createElement('div');
+      textInner.className = 'seq-text-inner';
+
+      sec.nodes.forEach(n => textInner.appendChild(n.cloneNode(true)));
+      textOuter.appendChild(textInner);
+      wrapper.appendChild(textOuter);
+
+      // media-only?
+      const tmp = wrapper.cloneNode(true);
+      const mediaOnly = detectMediaOnly(tmp);
+
+      if (mediaOnly){
+        wrapper.classList.add('is-media');
+        wrapper.innerHTML = '';
+
+        let topTitle = sec.title;
+
+        const tmp2 = document.createElement('div');
+        sec.nodes.forEach(n => tmp2.appendChild(n.cloneNode(true)));
+        if (sectionIsOnlySingleImage(tmp2)){
+          const img = tmp2.querySelector('img');
+          const alt = (img?.getAttribute('alt') || '').trim();
+          if (alt) topTitle = alt;
+        }
+
+        const h = document.createElement('div');
+        h.className = 'seq-top-title';
+        h.textContent = topTitle;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'seq-media-wrap';
+        sec.nodes.forEach(n => wrap.appendChild(n.cloneNode(true)));
+
+        wrapper.appendChild(h);
+        wrapper.appendChild(wrap);
+      }
+
+      render.appendChild(wrapper);
+    });
+  }
+
+  const sections = buildSequences();
+  renderSequences(sections);
+
+  const sectionEls = Array.from(render?.querySelectorAll('.seq-section') || []);
+  const ids = sections.map(s => s.id);
+
+  function setActiveById(id){
+    const idx = Math.max(0, ids.indexOf(id));
+    sectionEls.forEach((el, i) => el.classList.toggle('is-active', i === idx));
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === ids.length - 1;
+    counter.textContent = `${idx + 1} / ${ids.length}`;
+  }
+
+  function currentIdFromHash(){
+    const h = (location.hash || '').replace('#','').trim();
+    if (!h) return ids[0];
+    return ids.includes(h) ? h : ids[0];
+  }
+
+  function goToIndex(idx){
+    const clamped = Math.min(Math.max(idx, 0), ids.length - 1);
+    const id = ids[clamped];
+    history.replaceState(null, '', `#${id}`);
+    setActiveById(id);
+  }
+
+  // Drawer list
+  drawerList.innerHTML = '';
+  sections.forEach((s, i) => {
+    const a = document.createElement('a');
+    a.href = `#${s.id}`;
+    a.textContent = s.title || `Section ${i+1}`;
+    a.addEventListener('click', () => {
+      drawer.dataset.open = 'false';
+      setActiveById(s.id);
+    });
+    drawerList.appendChild(a);
+  });
+
+  menuBtn.addEventListener('click', () => {
+    drawer.dataset.open = drawer.dataset.open === 'true' ? 'false' : 'true';
+  });
+  drawerClose.addEventListener('click', () => drawer.dataset.open = 'false');
+
+  prevBtn.addEventListener('click', () => {
+    const cur = currentIdFromHash();
+    goToIndex(ids.indexOf(cur) - 1);
+  });
+  nextBtn.addEventListener('click', () => {
+    const cur = currentIdFromHash();
+    goToIndex(ids.indexOf(cur) + 1);
+  });
+
+  window.addEventListener('hashchange', () => setActiveById(currentIdFromHash()));
+  setActiveById(currentIdFromHash());
+</script>
