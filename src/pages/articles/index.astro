@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { slugify } from '../../lib/slug';
+import { formatDateFR, normalizeMediaPath } from '../../lib/media';
 
 const all = (await getCollection('articles'))
   .filter(e => !e.data.draft)
@@ -14,39 +15,47 @@ const categories = Array.from(new Set(all.flatMap(a => a.data.categories || []))
   <div class="page">
     <div class="inner">
       <h1>Articles</h1>
-      <p class="muted">Tri : du plus récent au plus ancien. Filtre minimal par tag / catégorie.</p>
 
-      <div class="card">
-        <div class="row">
-          <div>
-            <small class="muted">Catégories</small><br/>
-            <select id="catSel">
-              <option value="">Toutes</option>
-              {categories.map(c => <option value={slugify(c)}>{c}</option>)}
-            </select>
-          </div>
-          <div>
-            <small class="muted">Tags</small><br/>
-            <select id="tagSel">
-              <option value="">Tous</option>
-              {tags.map(t => <option value={slugify(t)}>{t}</option>)}
-            </select>
-          </div>
-        </div>
+      <div class="filters">
+        <label class="filter">
+          <span class="muted">Catégories</span>
+          <select id="catSel">
+            <option value="">Toutes</option>
+            {categories.map(c => <option value={slugify(c)}>{c}</option>)}
+          </select>
+        </label>
+        <label class="filter">
+          <span class="muted">Tags</span>
+          <select id="tagSel">
+            <option value="">Tous</option>
+            {tags.map(t => <option value={slugify(t)}>{t}</option>)}
+          </select>
+        </label>
       </div>
 
       <div id="list">
         {all.map((a) => (
-          <article class="card" data-tags={a.data.tags.map(slugify).join(' ')} data-cats={a.data.categories.map(slugify).join(' ')}>
-            <div class="row">
-              <a href={`/articles/${a.slug}`}>{a.data.title}</a>
-              <small class="muted">{a.data.date.toISOString().slice(0,10)}</small>
+          <article class="card article-card" data-tags={a.data.tags.map(slugify).join(' ')} data-cats={a.data.categories.map(slugify).join(' ')}>
+            <a class="article-thumb" href={`/articles/${a.slug}`} aria-label={`Lire ${a.data.title}`}>
+              <img src={normalizeMediaPath(a.data.image)} alt={a.data.imageAlt} loading="lazy" />
+            </a>
+            <div class="article-body">
+              <a class="article-title" href={`/articles/${a.slug}`}>
+                <h2>{a.data.title}</h2>
+              </a>
+              <time class="article-date" datetime={a.data.date.toISOString()}>{formatDateFR(a.data.date)}</time>
+              <a class="article-description" href={`/articles/${a.slug}`}>
+                <p class="muted">{a.data.description}</p>
+              </a>
+              <div class="article-taxonomies">
+                {a.data.categories?.map((cat) => (
+                  <a class="pill tiny" href={`/categories/${slugify(cat)}`}>{cat}</a>
+                ))}
+                {a.data.tags?.map((tag) => (
+                  <a class="pill tiny" href={`/tags/${slugify(tag)}`}>{tag}</a>
+                ))}
+              </div>
             </div>
-            <p class="muted">{a.data.description}</p>
-            <small class="muted">
-              {a.data.categories?.length ? <>Catégories: {a.data.categories.join(', ')} — </> : null}
-              {a.data.tags?.length ? <>Tags: {a.data.tags.join(', ')}</> : null}
-            </small>
           </article>
         ))}
       </div>

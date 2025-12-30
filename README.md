@@ -8,6 +8,14 @@ Ce dépôt initialise un site statique **sans base de données** :
 - Recherche **statique** (Pagefind) générée au build
 - Sitemap via Astro
 
+## Spécifications et contrôle qualité
+
+Les 3 fichiers suivants résument les exigences et points à vérifier lors d'évolutions du site :
+
+- [SPECS.md](SPECS.md) : liste d'instructions à respecter pour générer le site
+- [CHECKLIST_UI.md](CHECKLIST_UI.md) : checklist pour un audit détaillé de l'interface utilisateur
+- [QA_RAPIDE.md](QA_RAPIDE.md) : Checklist express de l'interface utilisateur et quelques fonctionnalités avant livraison ou démo.
+
 ## Démarrage local
 
 ```bash

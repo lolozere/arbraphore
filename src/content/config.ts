@@ -6,6 +6,8 @@ const articles = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     description: z.string(),
+    image: z.string(),
+    imageAlt: z.string(),
     tags: z.array(z.string()).default([]),
     categories: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
@@ -40,4 +42,9 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { articles, journal, pages };
+const medias = defineCollection({
+  type: 'data',
+  schema: z.object({}).optional(),
+});
+
+export const collections = { articles, journal, pages, medias };

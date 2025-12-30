@@ -3,45 +3,72 @@ const now = new Date();
 const year = now.getFullYear();
 ---
 <aside class="sidebar" aria-label="Navigation">
-  <div class="brand">
+  <a class="brand" href="/" aria-label="Revenir à l'accueil">
     <div class="logo" aria-hidden="true"></div>
-    <div class="title">L'arbraphore</div>
-    <small class="muted">Démo Astro • MDX • Decap • Pagefind</small>
-  </div>
+    <div class="brand-text">
+      <div class="title">L'arbraphore</div>
+      <small class="muted">Mon élan poétique</small>
+    </div>
+  </a>
 
   <div class="search">
     <form action="/search" method="get">
       <input type="search" name="q" placeholder="Rechercher…" aria-label="Rechercher" />
     </form>
-    <div class="row">
-      <a class="pill" href="/articles">Articles</a>
-      <a class="pill" href="/journal">Journal</a>
+    <div class="stacked-actions">
+      <div class="split-pill" role="group" aria-label="Accès aux articles">
+        <a class="pill" href="/articles">Articles</a>
+        <a class="pill icon" href="/rss.xml" aria-label="Flux RSS des articles">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm5.5 1.3A9.7 9.7 0 0 0 2 10v3a6.7 6.7 0 0 1 6.7 6.7h1.8Zm4.2 0A13.8 13.8 0 0 0 2 6v3.2c5.1 0 9.3 4.1 9.3 9.3h3.4Z" fill="currentColor" />
+          </svg>
+        </a>
+      </div>
+      <div class="split-pill" role="group" aria-label="Accès au journal">
+        <a class="pill" href="/journal">Journal</a>
+        <a class="pill icon" href="/rss/journal.xml" aria-label="Flux RSS du journal">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 17a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm5.5 1.3A9.7 9.7 0 0 0 2 10v3a6.7 6.7 0 0 1 6.7 6.7h1.8Zm4.2 0A13.8 13.8 0 0 0 2 6v3.2c5.1 0 9.3 4.1 9.3 9.3h3.4Z" fill="currentColor" />
+          </svg>
+        </a>
+      </div>
     </div>
   </div>
 
   <nav>
-    <a class="pill" href="/">Accueil (séquences)</a>
     <a class="pill" href="/about">À propos (séquences)</a>
-    <a class="pill" href="/tags">Tags</a>
-    <a class="pill" href="/categories">Catégories</a>
-    <a class="pill" href="/rss.xml">RSS (articles)</a>
-    <a class="pill" href="/rss/journal.xml">RSS (journal)</a>
-    <a class="pill" href="/admin/">Éditer (Decap CMS)</a>
   </nav>
 
   <div class="hr"></div>
 
-  <div class="row">
+  <div class="row footer-row">
     <small class="muted">© {year}</small>
-    <button type="button" id="themeBtn">Mode</button>
+    <a class="pill tiny edit-link" href="/admin/">Éditer</a>
+    <button type="button" id="themeBtn" aria-label="Basculer le thème">☀️</button>
   </div>
 
   <script type="module">
     const btn = document.getElementById('themeBtn');
+    const getTheme = () => document.documentElement.dataset.theme || 'light';
+
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') {
+      document.documentElement.dataset.theme = stored;
+    }
+
+    function updateIcon(theme){
+      const isDark = theme === 'dark';
+      btn.textContent = isDark ? '🌙' : '☀️';
+      btn.setAttribute('aria-label', isDark ? 'Passer en mode clair' : 'Passer en mode sombre');
+    }
+
+    updateIcon(getTheme());
+
     btn?.addEventListener('click', () => {
-      const cur = document.documentElement.dataset.theme || 'light';
+      const cur = getTheme();
       const next = cur === 'dark' ? 'light' : 'dark';
       window.__setTheme?.(next);
+      updateIcon(next);
     });
   </script>
 </aside>
