@@ -6,9 +6,13 @@
   <title>Admin</title>
 </head>
 <body>
-  <!-- Decap CMS -->
-  <script>window.CMS_MANUAL_INIT = true;</script>
-  <script src="/admin/config.js"></script>
+  <!-- 1️⃣ Empêche l'auto-init -->
+  <script>
+    window.CMS_MANUAL_INIT = true;
+  </script>
+  <!-- 2️⃣ Charge Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- 3️⃣ Charge TA config dynamique (APRÈS Decap) -->
+  <script src="/admin/config.js"></script>
 </body>
 </html>
