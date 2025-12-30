@@ -7,7 +7,7 @@ export async function GET(context) {
     .sort((a,b)=>b.data.date.valueOf()-a.data.date.valueOf());
 
   return rss({
-    title: 'Journal — Créer mon journal en ligne',
+    title: "Journal — L'arbraphore",
     description: 'Flux RSS du journal (brèves)',
     site: context.site ?? new URL('https://example.com'),
     items: posts.map((p) => ({
