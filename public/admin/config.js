@@ -7,7 +7,7 @@ CMS.init({
       name: "github",
       repo: "lolozere/arbraphore",
       branch: "main",
-      base_url: "https://arbraphore-auth.lolozere.workers.dev"
+      base_url: "https://arabraphore-decap-auth.laurent-a35.workers.dev"
     },
     publish_mode: "editorial_workflow",
     media_folder: "public/uploads",
