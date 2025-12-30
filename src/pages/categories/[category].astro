@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { slugify } from '../../lib/slug';
+import { formatDateFR, normalizeMediaPath } from '../../lib/media';
 
 export async function getStaticPaths() {
   const all = (await getCollection('articles')).filter(e => !e.data.draft);
@@ -20,14 +21,32 @@ const label = (all[0]?.data.categories || []).find(c => slugify(c)===category) |
   <div class="page"><div class="inner">
     <h1>Catégorie : {label}</h1>
     <p><a class="muted" href={`/rss/categories/${category}.xml`}>RSS pour cette catégorie</a></p>
-    {all.map(a => (
-      <article class="card">
-        <div class="row">
-          <a href={`/articles/${a.slug}`}>{a.data.title}</a>
-          <small class="muted">{a.data.date.toISOString().slice(0,10)}</small>
-        </div>
-        <p class="muted">{a.data.description}</p>
-      </article>
-    ))}
+
+    <div id="list">
+      {all.map((a) => (
+        <article class="card article-card">
+          <a class="article-thumb" href={`/articles/${a.slug}`} aria-label={`Lire ${a.data.title}`}>
+            <img src={normalizeMediaPath(a.data.image)} alt={a.data.imageAlt} loading="lazy" />
+          </a>
+          <div class="article-body">
+            <a class="article-title" href={`/articles/${a.slug}`}>
+              <h2>{a.data.title}</h2>
+            </a>
+            <time class="article-date" datetime={a.data.date.toISOString()}>{formatDateFR(a.data.date)}</time>
+            <a class="article-description" href={`/articles/${a.slug}`}>
+              <p class="muted">{a.data.description}</p>
+            </a>
+            <div class="article-taxonomies">
+              {a.data.categories?.map((cat) => (
+                <a class="pill tiny cat" href={`/categories/${slugify(cat)}`}>{cat}</a>
+              ))}
+              {a.data.tags?.map((tag) => (
+                <a class="pill tiny tag" href={`/tags/${slugify(tag)}`}>{tag}</a>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
   </div></div>
 </BaseLayout>

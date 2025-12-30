@@ -5,6 +5,7 @@ const articles = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
     description: z.string(),
     image: z.string(),
     imageAlt: z.string(),

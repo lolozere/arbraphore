@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SequenceReader from '../../components/SequenceReader.astro';
 import { getCollection, render } from 'astro:content';
+import { normalizeMediaPath, formatDateFR } from '../../lib/media';
 
 export async function getStaticPaths() {
   const entries = (await getCollection('articles')).filter(e => !e.data.draft);
@@ -13,9 +14,21 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
+const imagePath = normalizeMediaPath(entry.data.image);
+const updatedDate = entry.data.updated || entry.data.date;
 ---
-<BaseLayout title={entry.data.title} description={entry.data.description}>
-  <SequenceReader>
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  image={imagePath}
+  imageAlt={entry.data.imageAlt}
+  ogType="article"
+>
+  <SequenceReader
+    title={entry.data.title}
+    publishedLabel={formatDateFR(entry.data.date)}
+    updatedLabel={formatDateFR(updatedDate)}
+  >
     <Content />
   </SequenceReader>
 </BaseLayout>

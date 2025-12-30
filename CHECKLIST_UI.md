@@ -44,18 +44,24 @@ Cette checklist sert à vérifier la conformité **fonctionnelle et visuelle** d
 
 - [ ] Barre de navigation en bas visible
 - [ ] Flèches précédent / suivant fonctionnelles
+- [ ] Boutons précédent / suivant du navigateur passent à la séquence précédente / suivante
+- [ ] Swipe gauche / droite sur mobile change de séquence
 - [ ] Menu sections (hamburger) fonctionnel
 - [ ] Navigation par hash correcte
+- [ ] Titre + dates (publication / modification) toujours visibles en haut
 
 ### Sections média only
 - [ ] Pas de scroll
 - [ ] Contenu centré verticalement
 - [ ] Titre affiché
 - [ ] Image seule → alt utilisé comme titre
+- [ ] Média responsive sur toute la largeur disponible
+- [ ] Image seule cliquable en taille réelle sur mobile
 
 ### Sections texte
 - [ ] Scroll autorisé
 - [ ] Texte justifié
+- [ ] Images adaptées à la largeur du conteneur
 
 ---
 
@@ -66,10 +72,16 @@ Cette checklist sert à vérifier la conformité **fonctionnelle et visuelle** d
 - [ ] Date sous le titre (format FR)
 - [ ] Catégories cliquables
 - [ ] Tags cliquables
+- [ ] Visuels distincts entre tags et catégories
 - [ ] Desktop : image ~50% gauche
 - [ ] Mobile : image avant description
-- [ ] Filtres catégorie + tag centrés
+- [ ] Filtres catégorie + tag alignés à gauche
 - [ ] Aucun texte d’aide / encadré inutile
+
+## Dbis. Pages tags / catégories
+
+- [ ] Listes tag / catégorie reprennent l’affichage de la page articles
+- [ ] Filtres et alignements identiques à la liste des articles
 
 ---
 
@@ -78,6 +90,7 @@ Cette checklist sert à vérifier la conformité **fonctionnelle et visuelle** d
 - [ ] /journal affiche 3 derniers contenus
 - [ ] Navigation par année / mois
 - [ ] Date toujours cliquable
+- [ ] Introduction : « Journal de bord de la traversée »
 
 ### Rendu des types
 - [ ] YouTube/Vimeo : vidéo + texte
@@ -102,6 +115,7 @@ Cette checklist sert à vérifier la conformité **fonctionnelle et visuelle** d
 - [ ] RSS journal OK
 - [ ] RSS tags / catégories OK
 - [ ] Sitemap généré
+- [ ] og:image présent avec l’image à la une
 
 ---
 
