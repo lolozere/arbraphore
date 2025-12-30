@@ -252,14 +252,78 @@ public/
 
 ---
 
-## CMS (édition en ligne)
+## CMS (édition en ligne) — Exigences GitHub + Cloudflare (toutes branches)
 
-### Decap CMS
-- Interface accessible via `/admin`.
-- Authentification Git (OAuth).
-- Écriture directe dans le dépôt.
-- Pas de base de données.
-- Compatible Markdown et MDX.
+Cette section précise les exigences de fonctionnement de **Decap CMS** avec un dépôt **GitHub** et un hébergement **Cloudflare Pages**, y compris pour les déploiements de prévisualisation (branches/PR) dont l’URL peut varier.
+
+### Objectifs
+- L’interface d’admin est accessible via **`/admin`** sur **toutes** les versions déployées (production et previews).
+- L’authentification Decap fonctionne via GitHub OAuth **sans dépendre** d’une URL Pages fixe (compatible `arbraphore.pages.dev` et `*.arbraphore.pages.dev`).
+- L’édition crée/modifie des fichiers dans le dépôt GitHub (workflow éditorial possible), sans base de données.
+
+### Architecture retenue
+- **Decap CMS** est servi statiquement depuis `public/admin/`.
+- La configuration Decap est **dynamique** via `public/admin/config.js` (et non via `config.yml`), afin de s’adapter automatiquement à l’URL du déploiement courant.
+- Un **OAuth proxy** est hébergé sur **Cloudflare Workers** (domaine stable `*.workers.dev` ou sous-domaine Cloudflare), et sert d’interface OAuth entre Decap et GitHub.
+
+### Fichiers et scripts (ordre obligatoire)
+- `public/admin/index.html` :
+  - définit `window.CMS_MANUAL_INIT = true` **avant** de charger Decap
+  - charge ensuite `decap-cms.js`
+  - charge enfin `public/admin/config.js` qui appelle `CMS.init(...)`
+
+Ordre attendu :
+1. `window.CMS_MANUAL_INIT = true;`
+2. `<script src="...decap-cms.js"></script>`
+3. `<script src="/admin/config.js"></script>`
+
+> Remarque : `public/admin/config.yml` est **vide/absent** (pour éviter double chargement de configuration et collisions de noms de collections).
+
+### Configuration Decap (config.js)
+Exigences minimales dans `config.js` :
+- `backend.name = "github"`
+- `backend.repo = "<owner>/<repo>"` (ex. `lolozere/arbraphore`)
+- `backend.branch = "main"` (branche cible des commits/PR créés par Decap)
+- `backend.base_url = "https://<ton-worker>.workers.dev"` (domaine stable de l’OAuth proxy)
+- `site_url` et `display_url` doivent être **dynamiques** :
+  - `const origin = window.location.origin;`
+  - `site_url: origin`
+  - `display_url: origin`
+
+Ainsi, Decap s’adapte automatiquement aux URLs Cloudflare Pages :
+- production : `https://arbraphore.pages.dev`
+- preview (hash) : `https://<hash>.arbraphore.pages.dev`
+- preview (branche) : `https://<branche>.arbraphore.pages.dev`
+
+### OAuth proxy (Cloudflare Workers)
+Exigences :
+- Un Worker “OAuth proxy” expose au minimum :
+  - `/auth`
+  - `/callback`
+- Le Worker est déployé sur un **domaine stable** (workers.dev ou sous-domaine Cloudflare).
+
+Le champ Decap correspondant :
+- `backend.base_url = "https://<domaine-du-worker>"`
+
+### GitHub OAuth App (obligatoire)
+Dans GitHub → Developer Settings → OAuth Apps :
+- **Homepage URL** : URL de production Pages (ex. `https://arbraphore.pages.dev`)
+- **Authorization callback URL** : `https://<domaine-du-worker>/callback`
+
+> Le callback pointe **toujours** vers le Worker (stable), pas vers une URL de preview Pages.
+
+### Compatibilité multi-branches (exigences)
+- L’admin `/admin` doit fonctionner quel que soit le domaine du déploiement (prod/preview).
+- `config.js` doit être la **seule source de configuration** Decap (pas de `config.yml` actif).
+- Les collections doivent avoir des `name` uniques (ex. `articles`, `journal`, `pages`) et ne pas être déclarées deux fois.
+- Le bouton **« Éditer »** (sidebar) pointe vers `/admin` (même origine), donc compatible previews.
+
+### Notes opérationnelles
+- Decap peut fonctionner en `publish_mode: editorial_workflow` (PR/branches internes GitHub) ou en mode direct selon tes préférences.
+- Pour les previews de PR Cloudflare Pages, l’admin est utilisable pour éditer, mais les changements sont envoyés vers la branche cible configurée dans `backend.branch` (ex. `main`) ou via workflow éditorial GitHub.
+
+
+---
 
 ---
 
