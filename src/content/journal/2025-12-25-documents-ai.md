@@ -4,7 +4,7 @@ date: '2025-12-25'
 type: documents
 documents:
 - label: PDF de démo (AI demo document)
-  file: /uploads/ai-demo.pdf
+  file: ../medias/ai-demo.pdf
 draft: false
 ---
 

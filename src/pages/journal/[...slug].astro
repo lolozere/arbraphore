@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import { normalizeMediaPath } from '../../lib/media';
 
 export async function getStaticPaths() {
   const entries = (await getCollection('journal')).filter(e => !e.data.draft);
@@ -26,7 +27,8 @@ function renderJournalHeader(){
   }
   if (type === 'image' && d.image){
     const alt = d.imageAlt || d.title;
-    return `<img src="${d.image}" alt="${alt}" />`;
+    const src = normalizeMediaPath(d.image);
+    return `<img src="${src}" alt="${alt}" />`;
   }
   return '';
 }
@@ -50,7 +52,10 @@ function renderJournalHeader(){
         <strong>Documents</strong>
         <div class="hr"></div>
         <ul>
-          {entry.data.documents.map(d => <li><a href={d.file} download>{d.label}</a></li>)}
+          {entry.data.documents.map(d => {
+            const file = normalizeMediaPath(d.file);
+            return <li><a href={file} download>{d.label}</a></li>;
+          })}
         </ul>
       </div>
     ) : null}
