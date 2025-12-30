@@ -1,4 +1,4 @@
-# Créer mon journal en ligne — starter (Astro + MDX + Decap CMS + Pagefind)
+# L'arbraphore — starter (Astro + MDX + Decap CMS + Pagefind)
 
 Ce dépôt initialise un site statique **sans base de données** :
 - Articles en **MDX** lus en **séquences** (chaque `##` = une section)
