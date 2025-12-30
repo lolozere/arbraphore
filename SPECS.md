@@ -1,27 +1,54 @@
-# Arbraphore — Les spécifications fonctionnelles et techniques
+# Arbraphore — Spécifications fonctionnelles et techniques
 
-Arbraphore est un **starter éditorial statique** basé sur **Astro**, conçu pour publier des articles et un journal personnel sous forme de **contenus Markdown / MDX**, hébergés dans un dépôt Git, **sans base de données**, avec une expérience de lecture **par séquences** centrée sur le contenu.
+Arbraphore est un **starter éditorial statique** basé sur **Astro**, destiné à la publication d’articles et d’un journal personnel en **Markdown / MDX**, hébergés dans un dépôt Git, **sans base de données**, avec une expérience de lecture **par séquences** centrée sur le contenu.
 
 Le projet privilégie :
 - la performance (SEO, HTML statique)
 - la simplicité structurelle
 - le contrôle total du contenu
-- une interface minimaliste
+- une interface minimaliste et narrative
 
 ---
 
 ## Sommaire
 
+- [Contexte général](#contexte-général)
 - [Principes](#principes)
-- [Exigences fonctionnelles](#exigences-fonctionnelles)
+- [Sidebar](#sidebar)
 - [Types de contenus](#types-de-contenus)
 - [Lecture par séquences](#lecture-par-séquences)
-- [Navigation et interface](#navigation-et-interface)
+- [Contenus et médias](#contenus-et-médias)
+- [Page liste des articles](#page-liste-des-articles)
 - [Recherche, SEO et RSS](#recherche-seo-et-rss)
-- [Choix techniques](#choix-techniques)
+- [Build et déploiement](#build-et-déploiement)
 - [Organisation du dépôt](#organisation-du-dépôt)
-- [Déploiement](#déploiement)
 - [CMS (édition en ligne)](#cms-édition-en-ligne)
+
+---
+
+## Contexte général
+
+- Site statique basé sur **Astro**.
+- Contenu rédigé en **MDX** pour les articles et pages séquencées.
+- Brèves de **journal** en Markdown simple, non séquencées.
+- Chaque titre `##` dans un article ou une page correspond à une **séquence de lecture**.
+- Pages principales :
+  - Accueil (séquencé)
+  - Articles
+  - Journal
+  - À propos (séquencé)
+  - Pages de taxonomie (tags, catégories)
+- Flux **RSS** pour :
+  - tous les articles
+  - chaque catégorie
+  - chaque tag
+  - le journal
+- Recherche statique générée via **Pagefind** au build.
+- Sitemap généré automatiquement par Astro.
+- Navigation séquencée :
+  - flèches précédente / suivante en bas d’écran
+  - menu listant les sections
+  - navigation par **hash URL** généré depuis le titre de section.
 
 ---
 
@@ -36,27 +63,36 @@ Le projet privilégie :
 
 ---
 
-## Exigences fonctionnelles
+## Sidebar
 
-### Contenu
-- Contenu stocké exclusivement dans un dépôt Git (GitHub, GitLab ou Gitea).
-- Rédaction en **Markdown** et **MDX**.
-- Versionnement complet du contenu.
-- Aucun backend applicatif.
-
-### Tri & métadonnées
-- Tri par date (du plus récent au plus ancien).
-- Système de **tags**.
-- Système de **catégories** (un contenu peut appartenir à plusieurs catégories).
+- Le **logo**, placé au-dessus du titre du site, est **cliquable** et renvoie vers l’accueil.
+- Le bouton « Accueil (séquences) » n’est **pas présent** dans le menu.
+- Le titre du site affiché est : **« L’arbraphore »**.
+- Le sous-titre est : **« Mon élan poétique »**.
+- Les boutons **Articles** et **Journal** sont divisés en deux zones cliquables :
+  - zone gauche : lien vers la page de listing
+  - zone droite : icône RSS pointant vers le flux correspondant
+- Les boutons **Tags** et **Catégories** sont **retirés** de la sidebar.
+- Le bouton **« Éditer »** est placé dans le **pied de la sidebar**, entre l’année affichée et le sélecteur de thème.
+- Le basculement clair / sombre se fait via une **icône seule** (aucun libellé texte).
+- Sur mobile :
+  - la sidebar est masquée par défaut
+  - ouverture via un **chevron discret** (tap ou swipe).
 
 ---
 
 ## Types de contenus
 
 ### Articles
-- Contenus longs et riches.
+- Contenus longs et riches en **MDX**.
 - Lecture **par séquences**.
-- Appartiennent à plusieurs catégories et tags.
+- Chaque article possède :
+  - un titre
+  - une date de publication
+  - une description
+  - une **image à la une au format 16:9** (obligatoire)
+  - des catégories (multiples)
+  - des tags (multiples)
 - Listés sur :
   - `/articles`
   - `/categories/[category]`
@@ -64,7 +100,7 @@ Le projet privilégie :
 
 ### Journal (brèves)
 - Contenus courts, type “post LinkedIn”.
-- **Pas de lecture séquentielle**.
+- **Pas de lecture séquencée**.
 - Chaque entrée possède :
   - un titre
   - une date cliquable
@@ -74,24 +110,23 @@ Le projet privilégie :
   - Image → image + texte
   - Citation → texte seul
   - Documents → texte + liens de téléchargement
-
-#### Navigation du journal
-- `/journal` → 3 derniers contenus
-- `/journal/[year]`
-- `/journal/[year]/[month]`
+- Navigation :
+  - `/journal` → 3 derniers contenus
+  - `/journal/[year]`
+  - `/journal/[year]/[month]`
 
 ### Pages
-- Pages éditoriales (ex : accueil, à propos).
-- Lecture **par séquences** comme les articles.
+- Pages éditoriales (Accueil, À propos).
+- Lecture **par séquences**, identique aux articles.
 
 ---
 
 ## Lecture par séquences
 
 ### Principe
-- Chaque section est définie par un titre `##` en Markdown.
+- Chaque section est définie par un titre `##`.
 - Une section = une **séquence de lecture**.
-- Navigation via **hash** (`#section-x`).
+- Navigation via **hash** (`#slug-de-section`).
 
 ### Navigation
 - Barre fixe en bas d’écran :
@@ -100,42 +135,58 @@ Le projet privilégie :
   - menu hamburger listant les sections
 - Aucune autre navigation globale.
 
-### Règles d’affichage des sections
+### Rappels de présentation
 
-#### Section texte
-- Scroll autorisé.
-- Contenu justifié.
-- Largeur de lecture confortable.
-
-#### Section média uniquement
-- Pas de scroll.
-- Contenu centré verticalement.
-- Titre affiché en haut.
-- Si image seule : le titre affiché est le **texte alternatif** de l’image.
+- **Section média only** :
+  - image, iframe, audio ou vidéo sans texte
+  - centrée verticalement
+  - sans scroll
+  - affiche un titre en haut
+    - si image seule : texte alternatif de l’image
+    - sinon : titre `##`
+- **Section texte** :
+  - scroll autorisé
+  - texte justifié
+  - largeur de lecture confortable
 
 ---
 
-## Navigation et interface
+## Contenus et médias
 
-- **Pas d’en-tête**.
-- Une **sidebar unique**, seul élément de navigation globale.
-- La sidebar contient :
-  - un logo
-  - le **titre de la marque affiché : “L’arbraphore”**
-  - un champ de recherche
-  - les menus (articles, journal, tags, catégories, flux RSS)
+- Chaque article possède une **image à la une 16:9**.
+- Tous les médias (images, audio, vidéos, documents) sont stockés dans :
+  ```
+  /src/content/medias
+  ```
+- Les fichiers Markdown / MDX référencent les médias via des **chemins relatifs** :
+  ```
+  ../medias/ai-neurons.svg
+  ```
+- Lors du build statique :
+  - les médias sont copiés vers `/public/medias`
+  - les liens sont réécrits en **chemin absolu racine** (`/medias/...`)
+  - aucun domaine n’est inclus (compatible preview / production).
 
-### Comportement responsive
-- Sur desktop :
-  - sidebar visible en permanence
-- Sur mobile :
-  - sidebar masquée par défaut
-  - ouverture via un **chevron discret** (tap ou swipe depuis le bord de l’écran)
+---
 
-### Principes visuels
-- Mode sombre supporté.
-- Interface minimaliste.
-- Contenu prioritaire, sans distraction.
+## Page liste des articles
+
+- Le titre de chaque article est en **`<h2>`**.
+- Le **titre**, l’**image à la une** et la **description** sont cliquables.
+- La **date** est affichée :
+  - sous le titre
+  - sans espace supplémentaire
+  - au format français
+- Les **catégories** et **tags** sont cliquables.
+- Mise en page responsive :
+  - **bureau** : image à la une ~50% de la largeur, alignée à gauche
+  - **mobile** : image affichée avant la description
+- Barre de filtres :
+  - listes déroulantes catégorie + tag
+  - sur une même ligne
+  - centrées
+  - sans encadré de type “card”
+- Texte d’aide au tri/filtrage supprimé.
 
 ---
 
@@ -143,10 +194,11 @@ Le projet privilégie :
 
 ### Recherche
 - Recherche plein texte par mots-clés.
-- Fonctionne **sans serveur** et **sans base de données**.
+- Générée au build via **Pagefind**.
+- Aucune API, aucun backend.
 
 ### SEO
-- HTML statique.
+- HTML statique performant.
 - URLs propres et stables.
 - Métadonnées SEO.
 - Sitemap automatique.
@@ -159,42 +211,22 @@ Le projet privilégie :
 
 ---
 
-## Choix techniques
+## Build et déploiement
 
-### Astro
-- Générateur de site statique.
-- HTML-first.
-- Support Markdown et MDX.
-- Chargement JavaScript minimal.
-- Très bonnes performances SEO.
+### Commandes
+- `npm install`
+- `npm run dev`
+- `npm run build`
+- `npm run preview` (vérification du build avec Pagefind)
 
-### Content Collections Astro
-- Collections définies :
-  - `articles`
-  - `journal`
-  - `pages`
-- Validation du frontmatter.
-- Accès unifié pour pages, RSS et recherche.
-
-### MDX
-- Utilisé pour les articles et les pages.
-- Permet l’intégration de médias (Spotify, YouTube, audio, etc.).
-- Aucune balise spéciale pour les sections :
-  - découpage automatique par `##`.
-
-### Détection automatique des sections
-- Parsing du contenu MDX au build.
-- Chaque `h2` devient une séquence.
-- Détection automatique :
-  - section texte
-  - section média-only
-- Aucun composant dédié type `<MediaOnly>`.
-
-### Recherche
-- **Pagefind**
-  - index généré au build
-  - recherche côté client
-  - aucun backend
+### Déploiement
+- Déploiement recommandé via **Cloudflare Pages** :
+  - intégration Git
+  - ou GitHub Actions
+- Secrets requis :
+  - `CLOUDFLARE_API_TOKEN`
+  - `CLOUDFLARE_ACCOUNT_ID`
+  - `CLOUDFLARE_PAGES_PROJECT_NAME`
 
 ---
 
@@ -206,6 +238,7 @@ src/
     articles/
     journal/
     pages/
+    medias/
   pages/
     articles/
     journal/
@@ -214,29 +247,8 @@ src/
     rss/
 public/
   admin/        # Decap CMS
-  uploads/      # images et documents
+  medias/       # médias copiés au build
 ```
-
----
-
-## Déploiement
-
-### Dépôt Git
-- Compatible GitHub, GitLab et Gitea.
-- Démonstration réalisée avec GitHub.
-
-### Hébergement
-- **Cloudflare Pages**
-  - plan gratuit
-  - CDN mondial
-  - domaines personnalisés possibles
-
-### CI/CD
-- Build automatique à chaque commit :
-  1. installation des dépendances
-  2. `astro build`
-  3. génération de l’index Pagefind
-  4. déploiement Pages
 
 ---
 
@@ -256,9 +268,3 @@ public/
 Arbraphore est pensé comme un **outil d’écriture et de lecture**, pas comme une plateforme sociale.
 
 Le rythme de lecture, la sobriété visuelle et la pérennité du contenu priment sur la complexité technique.
-
----
-
-## Licence
-
-Libre d’utilisation et d’adaptation pour des projets personnels ou éditoriaux.
