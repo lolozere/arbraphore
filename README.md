@@ -8,6 +8,8 @@ Ce dépôt initialise un site statique **sans base de données** :
 - Recherche **statique** (Pagefind) générée au build
 - Sitemap via Astro
 
+Specifications fonctionnelles et techniques pour générer ce site : [SPECS.md](SPECS.md)
+
 ## Démarrage local
 
 ```bash
