@@ -6,122 +6,122 @@ Cette checklist sert à vérifier la conformité **fonctionnelle et visuelle** d
 
 ## A. Règles globales
 
-- [ ] Aucun header global
-- [ ] Navigation limitée à la sidebar et aux séquences
-- [ ] Contenu centré et lisible (desktop / mobile)
-- [ ] Mode clair / sombre fonctionnel
-- [ ] Aucune UI décorative inutile
+- [x] Aucun header global
+- [x] Navigation limitée à la sidebar et aux séquences
+- [x] Contenu centré et lisible (desktop / mobile)
+- [x] Mode clair / sombre fonctionnel
+- [x] Aucune UI décorative inutile
 
 ---
 
 ## B. Sidebar
 
 ### Desktop
-- [ ] Sidebar visible
-- [ ] Logo cliquable → /
-- [ ] Titre : **L’arbraphore**
-- [ ] Sous-titre : *Mon élan poétique*
-- [ ] Recherche visible
-- [ ] Bouton Articles :
-  - [ ] gauche → /articles
-  - [ ] droite → /rss.xml
-- [ ] Bouton Journal :
-  - [ ] gauche → /journal
-  - [ ] droite → /rss/journal.xml
-- [ ] Pas de Tags / Catégories
-- [ ] Bouton Éditer en pied de sidebar
-- [ ] Icône seul pour le mode clair/sombre
+- [x] Sidebar visible
+- [x] Logo cliquable → /
+- [x] Titre : **L’arbraphore**
+- [x] Sous-titre : *Mon élan poétique*
+- [x] Recherche visible
+- [x] Bouton Articles :
+  - [x] gauche → /articles
+  - [x] droite → /rss.xml
+- [x] Bouton Journal :
+  - [x] gauche → /journal
+  - [x] droite → /rss/journal.xml
+- [x] Pas de Tags / Catégories
+- [x] Bouton Éditer en pied de sidebar
+- [x] Icône seul pour le mode clair/sombre
 
 ### Mobile
-- [ ] Sidebar masquée par défaut
-- [ ] Chevron visible
-- [ ] Tap / swipe ouvre la sidebar
-- [ ] Tap hors sidebar ferme
+- [x] Sidebar masquée par défaut
+- [x] Chevron visible
+- [x] Tap / swipe ouvre la sidebar
+- [x] Tap hors sidebar ferme
 
 ---
 
 ## C. Pages séquencées
 
-- [ ] Barre de navigation en bas visible
-- [ ] Flèches précédent / suivant fonctionnelles
-- [ ] Boutons précédent / suivant du navigateur passent à la séquence précédente / suivante
-- [ ] Swipe gauche / droite sur mobile change de séquence
-- [ ] Menu sections (hamburger) fonctionnel
-- [ ] Navigation par hash correcte
-- [ ] Titre + dates (publication / modification) toujours visibles en haut
+- [x] Barre de navigation en bas visible
+- [x] Flèches précédent / suivant fonctionnelles
+- [x] Boutons précédent / suivant du navigateur passent à la séquence précédente / suivante
+- [x] Swipe gauche / droite sur mobile change de séquence
+- [x] Menu sections (hamburger) fonctionnel
+- [x] Navigation par hash correcte
+- [x] Titre + dates (publication / modification) toujours visibles en haut
 
 ### Sections média only
-- [ ] Pas de scroll
-- [ ] Contenu centré verticalement
-- [ ] Titre affiché
-- [ ] Image seule → alt utilisé comme titre
-- [ ] Média responsive sur toute la largeur disponible
-- [ ] Image seule cliquable en taille réelle sur mobile
+- [x] Pas de scroll
+- [x] Contenu centré verticalement
+- [x] Titre affiché
+- [x] Image seule → alt utilisé comme titre
+- [x] Média responsive sur toute la largeur disponible
+- [x] Image seule cliquable en taille réelle sur mobile
 
 ### Sections texte
-- [ ] Scroll autorisé
-- [ ] Texte justifié
-- [ ] Images adaptées à la largeur du conteneur
+- [x] Scroll autorisé
+- [x] Texte justifié
+- [x] Images adaptées à la largeur du conteneur
 
 ---
 
 ## D. Liste des articles
 
-- [ ] Titre en h2
-- [ ] Titre / image / description cliquables
-- [ ] Date sous le titre (format FR)
-- [ ] Catégories cliquables
-- [ ] Tags cliquables
-- [ ] Visuels distincts entre tags et catégories
-- [ ] Desktop : image ~50% gauche
-- [ ] Mobile : image avant description
-- [ ] Filtres catégorie + tag alignés à gauche
-- [ ] Aucun texte d’aide / encadré inutile
+- [x] Titre en h2
+- [x] Titre / image / description cliquables
+- [x] Date sous le titre (format FR)
+- [x] Catégories cliquables
+- [x] Tags cliquables
+- [x] Visuels distincts entre tags et catégories
+- [x] Desktop : image ~50% gauche
+- [x] Mobile : image avant description
+- [x] Filtres catégorie + tag alignés à gauche
+- [x] Aucun texte d’aide / encadré inutile
 
 ## Dbis. Pages tags / catégories
 
-- [ ] Listes tag / catégorie reprennent l’affichage de la page articles
-- [ ] Filtres et alignements identiques à la liste des articles
+- [x] Listes tag / catégorie reprennent l’affichage de la page articles
+- [x] Filtres et alignements identiques à la liste des articles
 
 ---
 
 ## E. Journal
 
-- [ ] /journal affiche 3 derniers contenus
-- [ ] Navigation par année / mois
-- [ ] Date toujours cliquable
-- [ ] Introduction : « Journal de bord de la traversée »
+- [x] /journal affiche 3 derniers contenus
+- [x] Navigation par année / mois
+- [x] Date toujours cliquable
+- [x] Introduction : « Journal de bord de la traversée »
 
 ### Rendu des types
-- [ ] YouTube/Vimeo : vidéo + texte
-- [ ] Image : image + texte
-- [ ] Citation : texte seul
-- [ ] Documents : texte + liens
+- [x] YouTube/Vimeo : vidéo + texte
+- [x] Image : image + texte
+- [x] Citation : texte seul
+- [x] Documents : texte + liens
 
 ---
 
 ## F. Médias
 
-- [ ] Médias dans /src/content/medias
-- [ ] Références relatives dans MD/MDX
-- [ ] URLs finales en /medias/...
-- [ ] Articles avec image à la une 16:9
+- [x] Médias dans /src/content/medias
+- [x] Références relatives dans MD/MDX
+- [x] URLs finales en /medias/...
+- [x] Articles avec image à la une 16:9
 
 ---
 
 ## G. RSS & SEO
 
-- [ ] RSS articles OK
-- [ ] RSS journal OK
-- [ ] RSS tags / catégories OK
-- [ ] Sitemap généré
-- [ ] og:image présent avec l’image à la une
+- [x] RSS articles OK
+- [x] RSS journal OK
+- [x] RSS tags / catégories OK
+- [x] Sitemap généré
+- [x] og:image présent avec l’image à la une
 
 ---
 
 ## H. CMS
 
-- [ ] /admin accessible
-- [ ] Bouton Éditer fonctionne
-- [ ] Édition article MDX OK
-- [ ] Édition journal OK
+- [x] /admin accessible
+- [x] Bouton Éditer fonctionne
+- [x] Édition article MDX OK
+- [x] Édition journal OK

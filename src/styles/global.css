@@ -292,6 +292,12 @@ small, .muted{ color: var(--muted); }
   place-items: center;
   min-height: 0;
 }
+.seq :global(img){
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 .seq .seq-media-wrap :global(img),
 .seq .seq-media-wrap :global(video),
 .seq .seq-media-wrap :global(iframe){
