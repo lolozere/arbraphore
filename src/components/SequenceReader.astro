@@ -8,8 +8,29 @@
  * - text sections can scroll
  * - media-only shows section title at top; if the section is ONLY an image -> show image alt as title
  */
+const { title = '', publishedLabel = '', updatedLabel = '' } = Astro.props;
 ---
-<div class="seq" data-seq-root>
+<div class="seq" data-seq-root data-has-header={title ? 'true' : 'false'}>
+  {title ? (
+    <header class="seq-header">
+      <div class="seq-header-inner">
+        <div class="seq-header-title">
+          <p class="seq-chip">Article</p>
+          <h1>{title}</h1>
+        </div>
+        <div class="seq-header-dates">
+          <div class="seq-date">
+            <span class="muted tiny-label">Publié</span>
+            <strong>{publishedLabel}</strong>
+          </div>
+          <div class="seq-date">
+            <span class="muted tiny-label">Mis à jour</span>
+            <strong>{updatedLabel}</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+  ) : null}
   <div class="seq-viewport">
     <article class="seq-source" data-seq-source>
       <slot />
@@ -205,8 +226,12 @@
   function goToIndex(idx){
     const clamped = Math.min(Math.max(idx, 0), ids.length - 1);
     const id = ids[clamped];
-    history.replaceState(null, '', `#${id}`);
-    setActiveById(id);
+    const hash = `#${id}`;
+    if (location.hash === hash){
+      setActiveById(id);
+    } else {
+      location.hash = hash;
+    }
   }
 
   // Drawer list
@@ -238,4 +263,50 @@
 
   window.addEventListener('hashchange', () => setActiveById(currentIdFromHash()));
   setActiveById(currentIdFromHash());
+
+  // Swipe navigation (mobile)
+  let touchStart = null;
+  const viewport = root?.querySelector('.seq-viewport');
+  viewport?.addEventListener('touchstart', (e) => {
+    const t = e.touches?.[0];
+    if (!t) return;
+    touchStart = { x: t.clientX, y: t.clientY, time: Date.now() };
+  }, { passive: true });
+  viewport?.addEventListener('touchend', (e) => {
+    if (!touchStart) return;
+    const t = e.changedTouches?.[0];
+    touchStart.time = touchStart.time || Date.now();
+    if (!t) return;
+    const dx = t.clientX - touchStart.x;
+    const dy = t.clientY - touchStart.y;
+    const dt = Date.now() - touchStart.time;
+    touchStart = null;
+    if (Math.abs(dx) < 50 || Math.abs(dx) <= Math.abs(dy)) return;
+    if (dt > 600) return;
+    if (dx < 0){
+      const cur = currentIdFromHash();
+      goToIndex(ids.indexOf(cur) + 1);
+    } else {
+      const cur = currentIdFromHash();
+      goToIndex(ids.indexOf(cur) - 1);
+    }
+  }, { passive: true });
+
+  // Mobile full-size image access for media-only sections
+  function bindMediaImageZoom(){
+    const mediaImages = Array.from(render?.querySelectorAll('.seq-section.is-media img') || []);
+    mediaImages.forEach((img) => {
+      if (img.dataset.zoomBound === 'true') return;
+      img.dataset.zoomBound = 'true';
+      img.style.cursor = 'zoom-in';
+      img.addEventListener('click', () => {
+        if (!window.matchMedia('(max-width: 780px)').matches) return;
+        const src = img.currentSrc || img.src;
+        if (src) window.open(src, '_blank');
+      });
+    });
+  }
+
+  bindMediaImageZoom();
+  window.addEventListener('resize', bindMediaImageZoom);
 </script>

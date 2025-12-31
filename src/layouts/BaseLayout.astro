@@ -2,7 +2,9 @@
 import '../styles/global.css';
 import Sidebar from '../components/Sidebar.astro';
 
-const { title = 'Journal', description = '' } = Astro.props;
+const { title = 'Journal', description = '', image = '', imageAlt = '', ogType = 'website' } = Astro.props;
+const site = Astro.site?.href?.replace(/\/$/, '') || '';
+const ogImage = image ? (site ? new URL(image, site).href : image) : '';
 ---
 <!doctype html>
 <html lang="fr">
@@ -11,6 +13,11 @@ const { title = 'Journal', description = '' } = Astro.props;
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     {description ? <meta name="description" content={description} /> : null}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    {description ? <meta property="og:description" content={description} /> : null}
+    {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+    {ogImage ? <meta property="og:image:alt" content={imageAlt || title} /> : null}
     <title>{title}</title>
   </head>
   <body>

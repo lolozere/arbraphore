@@ -89,10 +89,12 @@ Le projet privilégie :
 - Chaque article possède :
   - un titre
   - une date de publication
+  - une date de dernière modification
   - une description
   - une **image à la une au format 16:9** (obligatoire)
   - des catégories (multiples)
   - des tags (multiples)
+- Le titre, la date de publication et la date de modification restent affichés en haut de l’écran quelle que soit la séquence.
 - Listés sur :
   - `/articles`
   - `/categories/[category]`
@@ -105,6 +107,7 @@ Le projet privilégie :
   - un titre
   - une date cliquable
   - un contenu Markdown
+- L’introduction de la page « Journal » affiche : « Journal de bord de la traversée ».
 - Types supportés :
   - YouTube / Vimeo → vidéo + texte
   - Image → image + texte
@@ -134,6 +137,9 @@ Le projet privilégie :
   - flèche suivante
   - menu hamburger listant les sections
 - Aucune autre navigation globale.
+- Navigation historique :
+  - sur desktop, le bouton précédent du navigateur remonte à la séquence précédente, le suivant avance à la séquence suivante
+  - sur mobile, le swipe gauche/droite déclenche le changement de séquence correspondant
 
 ### Rappels de présentation
 
@@ -144,9 +150,12 @@ Le projet privilégie :
   - affiche un titre en haut
     - si image seule : texte alternatif de l’image
     - sinon : titre `##`
+  - média responsive : largeur maximale de l’écran
+  - si l’image est seule, elle peut être ouverte en taille réelle sur mobile
 - **Section texte** :
   - scroll autorisé
   - texte justifié
+  - images intégrées qui respectent la largeur du conteneur
   - largeur de lecture confortable
 
 ---
@@ -178,15 +187,17 @@ Le projet privilégie :
   - sans espace supplémentaire
   - au format français
 - Les **catégories** et **tags** sont cliquables.
+- Tags et catégories utilisent des visuels distincts pour être différenciés.
 - Mise en page responsive :
   - **bureau** : image à la une ~50% de la largeur, alignée à gauche
   - **mobile** : image affichée avant la description
 - Barre de filtres :
   - listes déroulantes catégorie + tag
   - sur une même ligne
-  - centrées
+  - alignées à gauche
   - sans encadré de type “card”
 - Texte d’aide au tri/filtrage supprimé.
+- Les pages de tags ou de catégories reprennent exactement les mêmes principes d’affichage et de filtres que la liste des articles.
 
 ---
 
@@ -201,6 +212,7 @@ Le projet privilégie :
 - HTML statique performant.
 - URLs propres et stables.
 - Métadonnées SEO.
+- L’image à la une de chaque article est présente dans les balises Open Graph (`og:image`).
 - Sitemap automatique.
 
 ### RSS
