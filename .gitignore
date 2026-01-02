@@ -4,3 +4,6 @@ dist
 .DS_Store
 npm-debug.log*
 pnpm-lock.yaml
+package-lock.json
+docker-compose.yml
+.env.*

@@ -18,6 +18,11 @@ Les 3 fichiers suivants résument les exigences et points à vérifier lors d'é
 
 ## Démarrage local
 
+1. Crée un fichier `.env.developpement` avec l'URL utilisée en local, par exemple :
+   ```bash
+   SITE=http://arbraphore.local:4321
+   ```
+   (`SITE` est utilisée pour générer des URLs absolues dans le sitemap/RSS en dev.)
 ```bash
 npm install
 npm run dev
@@ -33,12 +38,15 @@ npm run preview
 
 ## Déploiement Cloudflare Pages (2 options)
 
+> Ajoute la variable d’environnement `SITE` dans Cloudflare Pages (Settings → Environment variables) : production = ton domaine final, preview = l’URL `https://<project>.pages.dev` pour des sitemaps/RSS corrects.
+
 ### Option A — Recommandée : intégration Git (sans GitHub Actions)
 1. Va dans Cloudflare Pages → **Create a project** et connecte ton repo GitHub.
 2. Paramètres build :
    - Framework preset: **Astro**
    - Build command: `npm run build`
    - Build output directory: `dist`
+3. Dans **Settings → Environment variables**, ajoute `SITE` (production et preview).
 
 (astro docs + cloudflare pages build settings) (voir docs Astro + Cloudflare Pages)
 
@@ -50,6 +58,7 @@ Le workflow `.github/workflows/cloudflare-pages.yml` déploie à chaque commit s
    - `CLOUDFLARE_API_TOKEN` (token avec permissions Pages)
    - `CLOUDFLARE_ACCOUNT_ID`
    - `CLOUDFLARE_PAGES_PROJECT_NAME` (le nom exact du projet Pages)
+3. Dans Cloudflare Pages, ajoute aussi la variable `SITE` (production et preview).
 
 Puis push sur `main`.
 

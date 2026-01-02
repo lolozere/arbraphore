@@ -16,11 +16,17 @@ function mediasIntegration(){
 
 export default defineConfig({
   site: 'https://example.com', // TODO: replace with your final domain (needed for sitemap + RSS absolute URLs)
+  vite: {
+    server: {
+      allowedHosts: [".local"],
+    },
+  },
   integrations: [
     mdx(),
     sitemap(),
     mediasIntegration(),
   ],
+  
   markdown: {
     remarkPlugins: [remarkMediasToAbsolute],
   },
