@@ -71,11 +71,11 @@ Le workflow `.github/workflows/cloudflare-pages.yml` déploie à chaque commit s
 Puis push sur `main`.
 
 ## Decap CMS (/admin)
-1. Édite `public/admin/config.yml` :
+
+1. Édite `public/admin/config.js` :
    - `repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME`
    - `site_url` et `display_url` avec l'URL Cloudflare Pages (`https://<project>.pages.dev`), puis ton domaine ensuite
-2. Dans GitHub, configure une GitHub OAuth App si besoin (selon ton modèle d’auth),
-   puis autorise l'accès.
+2. Dans GitHub, configure une GitHub OAuth App si besoin (selon ton modèle d’auth), puis autorise l'accès.
 
 Doc config Decap CMS (voir docs Decap CMS)
 

@@ -1,14 +1,9 @@
 /* global CMS */
 const origin = window.location.origin;
+const isLocalDev = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname) || origin.includes(".local");
 
-CMS.init({
-  config: {
-    backend: {
-      name: "github",
-      repo: "lolozere/arbraphore",
-      branch: "main",
-      base_url: "https://arabraphore-decap-auth.laurent-a35.workers.dev"
-    },
+// Default config
+const default_config = {
     publish_mode: "editorial_workflow",
     media_folder: "public/uploads",
     public_folder: "/uploads",
@@ -203,5 +198,32 @@ CMS.init({
             ]
         }
     ]
-  }
+}
+let cms_config = {}
+
+// Github config
+const github_config = {
+    backend: {
+      name: "github",
+      repo: "lolozere/arbraphore",
+      branch: "main",
+      base_url: "https://arabraphore-decap-auth.laurent-a35.workers.dev"
+    },
+    publish_mode: "editorial_workflow"
+}
+const local_config = {
+    local_backend: true,
+    backend: {
+      name: "git-gateway"
+    }
+}
+
+const runtime_config = isLocalDev ? local_config : github_config
+cms_config = {
+    ...default_config,
+    ...runtime_config
+}
+
+CMS.init({
+  config: cms_config
 });

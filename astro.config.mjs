@@ -19,12 +19,36 @@ function mediasIntegration(){
   };
 }
 
+function adminIndexFallback(){
+  const rewriteRequest = (server)=>{
+    server.middlewares.use((req,res,next)=>{
+      if(req.url === '/admin' || req.url === '/admin/'){
+        req.url = '/admin/index.html';
+      }
+      next();
+    });
+  };
+
+  return {
+    name: 'admin-index-fallback',
+    configureServer(server){
+      rewriteRequest(server);
+    },
+    configurePreviewServer(server){
+      rewriteRequest(server);
+    },
+  };
+}
+
 export default defineConfig({
   site: SITE || 'https://example.com', // TODO: replace with your final domain (needed for sitemap + RSS absolute URLs)
   vite: {
     server: {
       allowedHosts: [".local"],
     },
+    plugins: [
+      adminIndexFallback(),
+    ],
   },
   integrations: [
     mdx(),
