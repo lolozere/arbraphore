@@ -16,24 +16,32 @@ Les 3 fichiers suivants résument les exigences et points à vérifier lors d'é
 - [CHECKLIST_UI.md](CHECKLIST_UI.md) : checklist pour un audit détaillé de l'interface utilisateur
 - [QA_RAPIDE.md](QA_RAPIDE.md) : Checklist express de l'interface utilisateur et quelques fonctionnalités avant livraison ou démo.
 
-## Démarrage local
+## Démarrage local 
 
-1. Crée un fichier `.env.development` avec l'URL utilisée en local, par exemple :
+Créeer un fichier `.env.development` avec l'URL utilisée en local, par exemple :
 
 ```bash
-SITE=http://arbraphore.local:4321
+SITE=http://arbraphore.local
 ```
 
 (`SITE` est utilisée pour générer des URLs absolues dans le sitemap/RSS en dev.)
 
-2. Install
+Configurer aussi Decap CMS pour une fonctionnement local : lire section dédiée [Decap CMS en local](#decap-cms-en-local)
+
+### Avec docker-compose
+
+Copier le fichier `docker-compose.yml.dist` vers `docker-compose.yml` et le configurer en fonction de votre propre environnement local.
+
+### 
+
+1. Install
 
 ```bash
 npm install
 npm run dev
 ```
 
-3. Build + index recherche :
+2. Build + index recherche :
 
 ```bash
 npm run build
@@ -72,12 +80,21 @@ Puis push sur `main`.
 
 ## Decap CMS (/admin)
 
+### Decap CMS en local (avec docker-compose)
+
+1. Active le service `arbraphore.decap` défini dans `docker-compose.yml` : il lance `npx decap-server` sur le port 80 et expose `decap.arbraphore.local` pour le reverse proxy nginx. Tu peux démarrer tout le stack avec `docker compose up`.
+2. Dans `public/admin/config.js`, la configuration `local_config` bascule vers `git-gateway` et pointe `local_backend.url` sur `http://decap.arbraphore.local/api/v1` tout en ajoutant ce domaine à `allowed_hosts`. Le CMS local n’utilise pas `editorial_workflow` par défaut.
+3. Depuis ta machine hôte, fais pointer `decap.arbraphore.local` vers l’IP de l’hôte Docker (ou `localhost` si le proxy reverse local accepte ce nom) et laisse nginx-proxy router les requêtes vers le conteneur `arbraphore.decap`.
+4. L’interface `/admin` (par exemple `http://arbraphore.local/admin`) parlera ensuite au backend local via le proxy Git Gateway. Pour déboguer, vérifie `docker compose logs decap-server` et que `http://decap.arbraphore.local/api/v1` répond (un 404 depuis un navigateur est normal, l’essentiel est que la connexion TCP soit établie).
+
+### Decap CMS avec Github
+
 1. Édite `public/admin/config.js` :
    - `repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME`
    - `site_url` et `display_url` avec l'URL Cloudflare Pages (`https://<project>.pages.dev`), puis ton domaine ensuite
 2. Dans GitHub, configure une GitHub OAuth App si besoin (selon ton modèle d’auth), puis autorise l'accès.
 
-Doc config Decap CMS (voir docs Decap CMS)
+
 
 ## Conventions “séquences”
 - Chaque **`## Titre`** démarre une séquence.

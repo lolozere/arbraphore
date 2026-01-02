@@ -1,0 +1,41 @@
+version: "3.9"
+
+networks:
+  proxy:
+    external: true
+
+services:
+  web:
+    image: node:20-alpine
+    container_name: arbraphore.web
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - arbraphore_node_modules:/app/node_modules
+    environment:
+      VIRTUAL_HOST: arbraphore.local
+      HTTPS_METHOD: noredirect
+      VIRTUAL_PORT: 80
+    command: sh -lc "npm install && npm run dev -- --host 0.0.0.0 --port 80"
+    networks:
+      - proxy
+
+  decap-server:
+    image: node:20-alpine
+    container_name: arbraphore.decap
+    working_dir: /app
+    volumes:
+      - ./:/app
+    expose:
+      - "8080"
+    environment:
+      VIRTUAL_HOST: decap.arbraphore.local
+      HTTPS_METHOD: noredirect
+      VIRTUAL_PORT: 80
+      PORT: 80
+    command: sh -c "npm install && npx decap-server --host 0.0.0.0 --port 80"
+    networks:
+      - proxy
+
+volumes:
+  arbraphore_node_modules:
