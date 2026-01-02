@@ -28,11 +28,7 @@ SITE=http://arbraphore.local
 
 Configurer aussi Decap CMS pour une fonctionnement local : lire section dédiée [Decap CMS en local](#decap-cms-en-local)
 
-### Avec docker-compose
-
-Copier le fichier `docker-compose.yml.dist` vers `docker-compose.yml` et le configurer en fonction de votre propre environnement local.
-
-### 
+### Install classique 
 
 1. Install
 
@@ -49,6 +45,12 @@ npm run preview
 ```
 
 > `postbuild` lance `pagefind --site dist` pour générer `/pagefind/*` dans le build.
+
+### Avec docker-compose
+
+Copier le fichier `docker-compose.yml.dist` vers `docker-compose.yml` et le configurer en fonction de votre propre environnement local.
+
+Le service `content-watcher` démarré par `docker compose up` supervise `src/content` et relance `npm run build` dès qu’un article ou une image change, ce qui permet de rafraîchir le dossier `dist` sans recréer les conteneurs.
 
 ## Déploiement Cloudflare Pages (2 options)
 

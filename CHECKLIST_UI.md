@@ -68,13 +68,14 @@ Cette checklist sert à vérifier la conformité **fonctionnelle et visuelle** d
 ## D. Liste des articles
 
 - [ ] Titre en h2
-- [ ] Titre / image / description cliquables
+- [ ] Titre (et vignette, si active) cliquables ; la description n’est pas un lien
 - [ ] Date sous le titre (format FR)
 - [ ] Catégories cliquables
 - [ ] Tags cliquables
-- [ ] Visuels distincts entre tags et catégories
-- [ ] Desktop : image ~50% gauche
-- [ ] Mobile : image avant description
+- [ ] Visuels distincts entre tags et catégories avec hauteur uniforme
+- [ ] Desktop : image représentative (quand activée) à droite sur 50 % de la largeur ; aucun bloc réservé si l’image est absente
+- [ ] Mobile : image représentative (si présente) entre le titre et la date, largeur 100 %
+- [ ] Descriptions affichées en paragraphes séparés et espacés, `<br>` pour les retours simples
 - [ ] Filtres catégorie + tag alignés à gauche
 - [ ] Aucun texte d’aide / encadré inutile
 

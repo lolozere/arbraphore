@@ -91,7 +91,9 @@ Le projet privilégie :
   - une date de publication
   - une date de dernière modification
   - une description
-  - une **image à la une au format 16:9** (obligatoire)
+  - une **image à la une au format 16:9** (facultative) ; si `featuredImageEnabled` est activée en frontmatter, la vignette listée reprend :
+    1. l’image déclarée dans le champ `image`, si présente
+    2. sinon la première image inline du contenu
   - des catégories (multiples)
   - des tags (multiples)
 - Le titre, la date de publication et la date de modification restent affichés en haut de l’écran quelle que soit la séquence.
@@ -162,7 +164,7 @@ Le projet privilégie :
 
 ## Contenus et médias
 
-- Chaque article possède une **image à la une 16:9**.
+- Chaque article peut référencer une **image à la une 16:9** dans son frontmatter ; si elle est absente, la première image inline sert de secours dans les balises Open Graph et comme image de liste si `featuredImageEnabled` est cochée.
 - Tous les médias (images, audio, vidéos, documents) sont stockés dans :
   ```
   /src/content/medias
@@ -175,22 +177,21 @@ Le projet privilégie :
   - les médias sont copiés vers `/public/medias`
   - les liens sont réécrits en **chemin absolu racine** (`/medias/...`)
   - aucun domaine n’est inclus (compatible preview / production).
+- Le service `scripts/watch-content.mjs` utilisé dans docker compose surveille `src/content` et `src/content/medias`, déclenche `npm run build` à chaque changement et lance ensuite `scripts/sync-medias.mjs` pour garder `/public/medias` synchronisé sans redémarrer les containers.
 
 ---
 
 ## Page liste des articles
 
 - Le titre de chaque article est en **`<h2>`**.
-- Le **titre**, l’**image à la une** et la **description** sont cliquables.
-- La **date** est affichée :
-  - sous le titre
-  - sans espace supplémentaire
-  - au format français
-- Les **catégories** et **tags** sont cliquables.
-- Tags et catégories utilisent des visuels distincts pour être différenciés.
+- Seuls le titre (et son lien vers l’article) ainsi que la vignette représentative (lorsqu’elle est activée et disponible) sont cliquables. La description n’est plus incluse dans le lien.
+- La **date** française est affichée immédiatement sous le titre (via un `<time>` placé juste après celui-ci).
+- Les **catégories** et **tags** restent cliquables.
+- Tags et catégories utilisent des visuels distincts pour être différenciés tout en gardant une hauteur identique même si le layout change.
 - Mise en page responsive :
-  - **bureau** : image à la une ~50% de la largeur, alignée à gauche
-  - **mobile** : image affichée avant la description
+  - **bureau** : lorsque l’image représentative est activée, elle occupe 50 % de la largeur à droite du texte ; si elle n’existe pas, aucun espace n’est réservé.
+  - **mobile** : l’image représentative (si présente) est insérée entre le titre et la date et prend 100 % de la largeur.
+- Chaque description est divisée par le build en `<p>` (deux retours ligne créent un paragraphe, un seul un `<br />`), avec un espacement vertical uniforme entre les paragraphes.
 - Barre de filtres :
   - listes déroulantes catégorie + tag
   - sur une même ligne

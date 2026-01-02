@@ -481,14 +481,34 @@ small, .muted{ color: var(--muted); }
   margin: 12px 0;
 }
 .article-card{
+  display: block;
+}
+.article-body{
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "head"
+    "thumb"
+    "description"
+    "taxonomies";
+}
+.article-body--with-thumb{
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "head thumb"
+    "description thumb"
+    "taxonomies thumb";
+}
+.article-head{
+  grid-area: head;
   display: flex;
-  align-items: stretch;
-  gap: 14px;
+  flex-direction: column;
+  gap: 4px;
 }
 .article-thumb{
+  grid-area: thumb;
   display: block;
-  flex: 1 1 50%;
-  max-width: 50%;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -501,12 +521,17 @@ small, .muted{ color: var(--muted); }
   aspect-ratio: 16 / 9;
   display: block;
 }
-.article-body{
-  flex: 1 1 50%;
+.article-description{
+  grid-area: description;
+}
+.article-taxonomies{
+  grid-area: taxonomies;
+  grid-column: 1;
+  align-self: start;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
 }
 .article-title h2{
   margin: 0;
@@ -517,12 +542,12 @@ small, .muted{ color: var(--muted); }
   margin-top: 2px;
 }
 .article-description{ text-decoration: none; }
-.article-description p{ margin: 0; }
-.article-taxonomies{
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 10px;
+.article-description p{
+  margin: 0;
+  margin-bottom: 8px;
+}
+.article-description p:last-child{
+  margin-bottom: 0;
 }
 .article-taxonomies .pill.cat{ background: color-mix(in oklab, var(--accent), transparent 78%); border-color: color-mix(in oklab, var(--accent), transparent 30%); }
 .article-taxonomies .pill.tag{ background: color-mix(in oklab, var(--fg), transparent 90%); border-style: dashed; }
@@ -533,10 +558,13 @@ small, .muted{ color: var(--muted); }
 }
 
 @media (max-width: 780px){
-  .article-card{ flex-direction: column; }
-  .article-thumb{
-    max-width: 100%;
-    width: 100%;
+  .article-body--with-thumb{
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "head"
+      "thumb"
+      "description"
+      "taxonomies";
   }
   .seq-header-inner{ flex-direction: column; align-items: flex-start; }
   .seq-header-dates{ width: 100%; grid-template-columns: 1fr 1fr; text-align: left; }

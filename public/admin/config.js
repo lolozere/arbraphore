@@ -84,7 +84,7 @@ const default_config = {
                 {
                     "label": "Description",
                     "name": "description",
-                    "widget": "string"
+                    "widget": "text"
                 },
                 {
                     "label": "Tags",
@@ -103,6 +103,25 @@ const default_config = {
                     "name": "draft",
                     "widget": "boolean",
                     "default": false
+                },
+                {
+                    "label": "Activer l'image à la une",
+                    "name": "featuredImageEnabled",
+                    "widget": "boolean",
+                    "default": false,
+                    "required": false
+                },
+                {
+                    "label": "Image à la une",
+                    "name": "image",
+                    "widget": "image",
+                    "required": false
+                },
+                {
+                    "label": "Description de l'image à la une",
+                    "name": "imageAlt",
+                    "widget": "string",
+                    "required": false
                 },
                 {
                     "label": "Contenu (MDX)",

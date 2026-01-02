@@ -27,8 +27,9 @@ Checklist express avant livraison ou démo.
 - [ ] Images dans le texte adaptées au conteneur
 
 ## Articles
-- [ ] Image à la une 16:9
-- [ ] h2 + date FR
+- [ ] h2 + date FR (date placé juste sous le titre)
+- [ ] Image représentative (via featuredImageEnabled) située à droite sur desktop, entre titre et date sur mobile
+- [ ] Description rendue en paragraphes séparés et non cliquables
 - [ ] Filtres catégorie / tag alignés à gauche
 - [ ] Visuels distincts tags / catégories
 - [ ] Pages tag / catégorie alignées avec la liste d’articles

@@ -3,6 +3,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { slugify } from '../../lib/slug';
 import { formatDateFR, normalizeMediaPath } from '../../lib/media';
+import { resolveArticleImages } from '../../lib/featured-image';
+import { splitDescription } from '../../lib/description';
 
 export async function getStaticPaths() {
   const all = (await getCollection('articles')).filter(e => !e.data.draft);
@@ -23,30 +25,49 @@ const label = (all[0]?.data.categories || []).find(c => slugify(c)===category) |
     <p><a class="muted" href={`/rss/categories/${category}.xml`}>RSS pour cette catégorie</a></p>
 
     <div id="list">
-      {all.map((a) => (
-        <article class="card article-card">
-          <a class="article-thumb" href={`/articles/${a.slug}`} aria-label={`Lire ${a.data.title}`}>
-            <img src={normalizeMediaPath(a.data.image)} alt={a.data.imageAlt} loading="lazy" />
-          </a>
-          <div class="article-body">
-            <a class="article-title" href={`/articles/${a.slug}`}>
-              <h2>{a.data.title}</h2>
-            </a>
-            <time class="article-date" datetime={a.data.date.toISOString()}>{formatDateFR(a.data.date)}</time>
-            <a class="article-description" href={`/articles/${a.slug}`}>
-              <p class="muted">{a.data.description}</p>
-            </a>
-            <div class="article-taxonomies">
-              {a.data.categories?.map((cat) => (
-                <a class="pill tiny cat" href={`/categories/${slugify(cat)}`}>{cat}</a>
-              ))}
-              {a.data.tags?.map((tag) => (
-                <a class="pill tiny tag" href={`/tags/${slugify(tag)}`}>{tag}</a>
-              ))}
+      {all.map((a) => {
+        const representative = resolveArticleImages(a).representative;
+        const bodyClass = representative
+          ? 'article-body article-body--with-thumb'
+          : 'article-body';
+        return (
+          <article class="card article-card">
+            <div class={bodyClass}>
+              <header class="article-head">
+                <a class="article-title" href={`/articles/${a.slug}`}>
+                  <h2>{a.data.title}</h2>
+                </a>
+                <br />
+                <time class="article-date" datetime={a.data.date.toISOString()}>
+                  {formatDateFR(a.data.date)}
+                </time>
+              </header>
+              {representative && (
+                <a class="article-thumb" href={`/articles/${a.slug}`} aria-label={`Lire ${a.data.title}`}>
+                  <img
+                    src={normalizeMediaPath(representative.path)}
+                    alt={representative.alt ?? a.data.title}
+                    loading="lazy"
+                  />
+                </a>
+              )}
+              <div class="article-description">
+                {splitDescription(a.data.description).map((paragraph) => (
+                  <p class="muted" set:html={paragraph} />
+                ))}
+              </div>
+              <div class="article-taxonomies">
+                {a.data.categories?.map((cat) => (
+                  <a class="pill tiny cat" href={`/categories/${slugify(cat)}`}>{cat}</a>
+                ))}
+                {a.data.tags?.map((tag) => (
+                  <a class="pill tiny tag" href={`/tags/${slugify(tag)}`}>{tag}</a>
+                ))}
+              </div>
             </div>
-          </div>
-        </article>
-      ))}
+          </article>
+        );
+      })}
     </div>
   </div></div>
 </BaseLayout>
